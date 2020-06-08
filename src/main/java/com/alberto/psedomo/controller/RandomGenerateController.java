@@ -36,7 +36,7 @@ import jakarta.ws.rs.core.MediaType;
 
 @Path("/")
 public class RandomGenerateController {
-	static int sizepoll=5;
+	static int sizepoll=1;
 	public  static int contagem=0;
 	SimpleDateFormat Formatter = new SimpleDateFormat("dd-MMMMM-yyyy hh:mm:ss");
     
