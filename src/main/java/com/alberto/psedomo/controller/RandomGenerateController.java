@@ -16,8 +16,10 @@ import java.util.concurrent.TimeoutException;
 import com.alberto.psedomo.model.DelayMe;
 import com.alberto.psedomo.model.NumeroRandom;
 import com.alberto.psedomo.service.Generate;
+
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -34,11 +36,11 @@ import jakarta.ws.rs.core.MediaType;
 
 @Path("/")
 public class RandomGenerateController {
-	static int size=5;
+	static int sizepoll=5;
 	public  static int contagem=0;
 	SimpleDateFormat Formatter = new SimpleDateFormat("dd-MMMMM-yyyy hh:mm:ss");
     
-    ExecutorService executorService = Executors.newFixedThreadPool(size);
+    ExecutorService executorService = Executors.newFixedThreadPool(sizepoll);
     public static  ArrayList<NumeroRandom> treadlist = new ArrayList<>();
     public static  ArrayList<NumeroRandom> pendinglist = new ArrayList<>();
     public static  ArrayList<NumeroRandom> finishedlist = new ArrayList<>();
@@ -52,10 +54,21 @@ public class RandomGenerateController {
 	@Path("/random")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-    public String send() {
-    	long Tempo=3000;
-    	if(Tempo<3000) {
-    		return "The request can not be processed, the time give should be at least 31 s";
+    public String send(@HeaderParam("X-Max-Wait") String dadoTempo) {
+
+    	//String dadoTempo="";
+    	long Tempo;
+    	
+    	
+    	if (dadoTempo!=null) {
+    		Tempo=1000*Long.parseLong(dadoTempo);
+    		
+    		if(Tempo<30000) {
+        		return "The request can not be processed, the time give should be at least 31 s";
+        	}
+    		
+    	}else{
+    		Tempo=30000;
     	}
     	
     	String condigoUniversal=GetID();
@@ -226,15 +239,12 @@ public class RandomGenerateController {
 	
     
 	 @PUT
-	 @Path("threads/{id}")
+	 @Path("threads")
 	 @Produces(MediaType.APPLICATION_JSON)
-	 public String sizethread(@PathParam("id") int Getsize){	
+	 public String sizethread(int size){	
 		 
-		 String value="21122";
-		 int max_pool=Integer.parseInt(value);
-		 
-		 if(Getsize>0 && Getsize<11) {
-			 size=Getsize;
+		 if(size>0 && size<11) {
+			 sizepoll=size;
 			 
 			 return "The Thread-pool size has been set to "+size;
 			
